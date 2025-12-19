@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ComptaFlowApplication<compta_flow>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.erp.compta_flow.ComptaFlowApplication",
+            "projectName": "compta_flow",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
