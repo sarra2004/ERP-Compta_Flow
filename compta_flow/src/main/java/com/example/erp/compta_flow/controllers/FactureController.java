@@ -5,6 +5,7 @@ import com.example.erp.compta_flow.services.FactureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,6 +31,7 @@ public class FactureController {
 
     // Consulter (Archivage)
     @GetMapping
+    @Transactional
     public List<Facture> getAll() {
         return factureService.findAll(); 
     }

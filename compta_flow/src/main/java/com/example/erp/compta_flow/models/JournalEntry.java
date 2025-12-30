@@ -3,14 +3,17 @@ package com.example.erp.compta_flow.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "journal_entries")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class JournalEntry {
 
     @Id
@@ -31,8 +34,8 @@ public class JournalEntry {
     @Column(name = "status")
     private Status status = Status.DRAFT;
 
-    @OneToMany(mappedBy = "journalEntry", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<JournalEntryLine> lines;
+    @OneToMany(mappedBy = "journalEntry", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<JournalEntryLine> lines = new ArrayList<>();
 
     public enum Status {
         DRAFT, POSTED

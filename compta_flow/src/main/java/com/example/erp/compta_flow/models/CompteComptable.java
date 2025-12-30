@@ -3,12 +3,14 @@ package com.example.erp.compta_flow.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "compte_comptable")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CompteComptable {
 
     @Id

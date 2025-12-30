@@ -5,11 +5,12 @@ import com.example.erp.compta_flow.services.JournalEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/entries")
+@RequestMapping("/api/journal-entries")
 public class JournalEntryController {
 
     @Autowired
@@ -54,6 +55,7 @@ public class JournalEntryController {
     }
 
     @GetMapping
+    @Transactional
     public List<JournalEntry> listEntries() {
         return service.listEntries();
     }

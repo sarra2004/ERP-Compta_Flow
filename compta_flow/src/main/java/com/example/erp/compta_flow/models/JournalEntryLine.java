@@ -3,6 +3,7 @@ package com.example.erp.compta_flow.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.math.BigDecimal;
 
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(name = "journal_entry_lines")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class JournalEntryLine {
 
     @Id

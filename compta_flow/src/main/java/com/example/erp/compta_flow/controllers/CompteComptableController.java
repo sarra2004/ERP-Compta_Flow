@@ -5,11 +5,12 @@ import com.example.erp.compta_flow.services.CompteComptableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/api/comptes")
 public class CompteComptableController {
 
     @Autowired
@@ -55,6 +56,7 @@ public class CompteComptableController {
     }
 
     @GetMapping
+    @Transactional
     public List<CompteComptable> listAccounts() {
         return service.listAccounts();
     }
