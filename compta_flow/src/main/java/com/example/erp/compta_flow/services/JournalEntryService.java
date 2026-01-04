@@ -21,14 +21,25 @@ public class JournalEntryService {
     private CompteComptableRepository accountRepository;
 
     public JournalEntry createEntry(JournalEntry entry) throws Exception {
-        // Check unique entry number
-        if (entryRepository.findByEntryNumber(entry.getEntryNumber()).isPresent()) {
-            throw new Exception("Entry number already exists");
+        // Check unique entry number only if provided
+        if (entry.getEntryNumber() != null && !entry.getEntryNumber().isEmpty()) {
+            if (entryRepository.findByEntryNumber(entry.getEntryNumber()).isPresent()) {
+                throw new Exception("Entry number already exists");
+            }
         }
 
         // Check that debit = credit
-        BigDecimal totalDebit = entry.getLines().stream().map(JournalEntryLine::getDebit).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalCredit = entry.getLines().stream().map(JournalEntryLine::getCredit).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (entry.getLines() == null || entry.getLines().isEmpty()) {
+            throw new Exception("Entry must have at least one line");
+        }
+        
+        BigDecimal totalDebit = entry.getLines().stream()
+            .map(line -> line.getDebit() != null ? line.getDebit() : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalCredit = entry.getLines().stream()
+            .map(line -> line.getCredit() != null ? line.getCredit() : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
         if (totalDebit.compareTo(totalCredit) != 0) {
             throw new Exception("Total debit must equal total credit");
         }
@@ -36,6 +47,9 @@ public class JournalEntryService {
         // Link each line to entry
         for (JournalEntryLine line : entry.getLines()) {
             line.setJournalEntry(entry);
+            if (line.getAccount() == null || line.getAccount().getId() == null) {
+                throw new Exception("Each line must have a valid account");
+            }
             if (!accountRepository.existsById(line.getAccount().getId())) {
                 throw new Exception("Account " + line.getAccount().getId() + " does not exist");
             }
@@ -55,6 +69,7 @@ public class JournalEntryService {
         entry.setEntryDate(updated.getEntryDate() != null ? updated.getEntryDate() : entry.getEntryDate());
         entry.setEntryNumber(updated.getEntryNumber() != null ? updated.getEntryNumber() : entry.getEntryNumber());
         entry.setJournalAccount(updated.getJournalAccount() != null ? updated.getJournalAccount() : entry.getJournalAccount());
+        entry.setDescription(updated.getDescription() != null ? updated.getDescription() : entry.getDescription());
 
         // Replace lines if provided
         if (updated.getLines() != null && !updated.getLines().isEmpty()) {

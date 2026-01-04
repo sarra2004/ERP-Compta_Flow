@@ -23,8 +23,8 @@ public class CompteComptable {
     @Column(name = "intitule", nullable = false, length = 255)
     private String intitule;
 
-    @Column(name = "classe", nullable = false)
-    private Integer classe;
+    @Column(name = "classe", nullable = false, length = 50)
+    private String classe;
 
     @Column(name = "type", length = 50)
     private String type;

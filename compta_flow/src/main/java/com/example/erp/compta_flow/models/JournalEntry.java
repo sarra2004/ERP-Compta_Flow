@@ -26,6 +26,9 @@ public class JournalEntry {
     @Column(name = "entry_date", nullable = false)
     private LocalDate entryDate;
 
+    @Column(name = "description")
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "journal_account_id")
     private CompteComptable journalAccount; // The journal account (like Cash, Bank, Sales, etc.)

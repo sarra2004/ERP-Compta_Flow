@@ -3,6 +3,7 @@ package com.example.erp.compta_flow.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public class JournalEntryLine {
 
     @ManyToOne
     @JoinColumn(name = "entry_id")
+    @JsonIgnore // Prevent recursive serialization with JournalEntry.lines
     private JournalEntry journalEntry;
 
     @ManyToOne

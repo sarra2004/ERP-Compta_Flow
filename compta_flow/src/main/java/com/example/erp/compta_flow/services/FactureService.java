@@ -34,15 +34,10 @@ public class FactureService {
         Facture facture = factureRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facture non trouvée"));
 
-        // 1. Rapprochement avec Bon de Commande (Vérification existence)
-        if (facture.getNumeroBonCommande() == null || facture.getNumeroBonCommande().isEmpty()) {
-            facture.setEtat(Facture.EtatFacture.ERREUR_RAPPROCHEMENT);
-            factureRepository.save(facture);
-            throw new RuntimeException("Validation échouée : Aucun numéro de bon de commande fourni.");
-        }
-
-        // 2. Contrôle de conformité des montants (Facture vs BC)
-        if (facture.getMontantBonCommande() == null || 
+        // Rapprochement optionnel : vérifier que montants sont cohérents
+        // Si numéro BC est fourni, vérifier les montants
+        if (facture.getNumeroBonCommande() != null && !facture.getNumeroBonCommande().isEmpty() &&
+            facture.getMontantBonCommande() != null &&
             Math.abs(facture.getMontantTTC() - facture.getMontantBonCommande()) > 0.01) {
             
             facture.setEtat(Facture.EtatFacture.ERREUR_RAPPROCHEMENT);
@@ -50,7 +45,7 @@ public class FactureService {
             throw new RuntimeException("Alerte Rapprochement : Écart de montant entre la facture et le bon de commande.");
         }
 
-        // 3. Simulation Enregistrement Écriture Comptable
+        // Simulation Enregistrement Écriture Comptable
         // On génère automatiquement l'écriture dans le journal des achats
         System.out.println("ERP : Génération automatique écriture journal des achats...");
         System.out.println("DEBIT Compte " + facture.getCompteComptable() + " / CREDIT Fournisseur " + facture.getFournisseur());

@@ -1,0 +1,135 @@
+.factures-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.facture-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.facture-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  min-height: 80px;
+}
+
+.readonly {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.factures-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.facture-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  transition: transform 0.2s;
+}
+
+.facture-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.facture-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.facture-header h3 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.type-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.type-badge.vente {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.type-badge.achat {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.facture-info {
+  margin-bottom: 1rem;
+}
+
+.facture-info p {
+  margin: 0.5rem 0;
+  color: #34495e;
+}
+
+.facture-amounts {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.amount-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem 0;
+}
+
+.amount-row.total {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid #dee2e6;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #2c3e50;
+}
+
+.facture-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status.en_attente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status.payee {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.annulee {
+  background-color: #f8d7da;
+  color: #721c24;
+}

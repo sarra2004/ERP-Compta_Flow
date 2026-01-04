@@ -34,7 +34,7 @@ public class CompteComptableService {
             acc.setIntitule(updated.getIntitule());
         }
 
-        if (updated.getClasse() != null && updated.getClasse() >= 1 && updated.getClasse() <= 8) {
+        if (updated.getClasse() != null && !updated.getClasse().isBlank()) {
             acc.setClasse(updated.getClasse());
         }
 

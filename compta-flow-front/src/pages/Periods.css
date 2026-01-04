@@ -1,0 +1,113 @@
+.periods-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.close-period-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.close-period-section h2 {
+  margin: 0 0 1.5rem 0;
+  color: #2c3e50;
+}
+
+.period-selector {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.period-selector select,
+.period-selector input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.btn-close-period {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.btn-close-period:hover:not(:disabled) {
+  background-color: #c0392b;
+}
+
+.btn-close-period:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.periods-list {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.periods-list h2 {
+  margin: 0 0 1.5rem 0;
+  color: #2c3e50;
+}
+
+.no-data {
+  text-align: center;
+  color: #7f8c8d;
+  padding: 2rem;
+  font-style: italic;
+}
+
+.periods-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.periods-list thead {
+  background-color: #34495e;
+  color: white;
+}
+
+.periods-list th,
+.periods-list td {
+  padding: 1rem;
+  text-align: left;
+}
+
+.periods-list tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.periods-list tbody tr:hover {
+  background-color: #e8f4f8;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status.open {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.closed {
+  background-color: #f8d7da;
+  color: #721c24;
+}

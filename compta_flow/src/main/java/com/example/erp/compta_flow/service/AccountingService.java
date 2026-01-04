@@ -86,4 +86,41 @@ public class AccountingService {
     public List<AccountingPeriod> getAllPeriods() {
         return periodRepository.findAllByOrderByYearDescMonthDesc();
     }
+    
+    /**
+     * Créer une nouvelle période ouverte
+     */
+    @Transactional
+    public AccountingPeriod createPeriod(Integer year, Integer month) {
+        // Vérifier si la période existe déjà
+        if (periodRepository.findByYearAndMonth(year, month).isPresent()) {
+            throw new AccountingException("Une période existe déjà pour " + year + "/" + month);
+        }
+        
+        AccountingPeriod period = AccountingPeriod.builder()
+            .year(year)
+            .month(month)
+            .status(PeriodStatus.OPEN)
+            .build();
+        
+        return periodRepository.save(period);
+    }
+    
+    /**
+     * Clôturer une période existante par son ID
+     */
+    @Transactional
+    public AccountingPeriod closePeriodById(Long id) {
+        AccountingPeriod period = periodRepository.findById(id)
+            .orElseThrow(() -> new AccountingException("Période non trouvée"));
+        
+        if (period.getStatus() == PeriodStatus.CLOSED) {
+            throw new AccountingException("Période déjà clôturée");
+        }
+        
+        period.setStatus(PeriodStatus.CLOSED);
+        period.setClosingDate(LocalDateTime.now());
+        
+        return periodRepository.save(period);
+    }
 }
