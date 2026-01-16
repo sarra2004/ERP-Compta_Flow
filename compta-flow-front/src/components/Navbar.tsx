@@ -12,6 +12,7 @@ const Navbar = () => {
         <li><Link to="/comptes">Plan Comptable</Link></li>
         <li><Link to="/journal-entries">Écritures Comptables</Link></li>
         <li><Link to="/factures">Factures</Link></li>
+        <li><Link to="/tresorerie">Trésorerie</Link></li>
         <li><Link to="/periods">Périodes Comptables</Link></li>
       </ul>
     </nav>

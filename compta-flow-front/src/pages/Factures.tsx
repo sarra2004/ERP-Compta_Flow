@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from '../api/axios';
 import type { Facture } from '../types';
 import './Factures.css';
@@ -7,6 +7,8 @@ const Factures = () => {
   const [factures, setFactures] = useState<Facture[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'BROUILLON' | 'VALIDEE'>('ALL');
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState<Facture>({
     // Aligné sur le backend: numeroFacture, dateFacture, montantHT/TVA/TTC, fournisseur, etat
     numeroFacture: '',
@@ -80,6 +82,48 @@ const Factures = () => {
     }
   };
 
+  type Totaux = {
+    totalHT: number;
+    totalTVA: number;
+    totalTTC: number;
+    countTotal: number;
+    countBrouillon: number;
+    countValidee: number;
+  };
+
+  const computed = useMemo<Totaux>(() => {
+    return factures.reduce<Totaux>(
+      (acc, facture) => {
+        const statut = (facture as any).etat || facture.status || 'BROUILLON';
+        const montantHT = (facture as any).montantHT ?? facture.montant ?? 0;
+        const montantTVA = (facture as any).montantTVA ?? facture.tva ?? montantHT * 0.2;
+        const montantTTC = (facture as any).montantTTC ?? facture.totalTTC ?? montantHT + montantTVA;
+
+        acc.totalHT += montantHT;
+        acc.totalTVA += montantTVA;
+        acc.totalTTC += montantTTC;
+        acc.countTotal += 1;
+        acc.countBrouillon += statut === 'BROUILLON' ? 1 : 0;
+        acc.countValidee += statut !== 'BROUILLON' ? 1 : 0;
+        return acc;
+      },
+      { totalHT: 0, totalTVA: 0, totalTTC: 0, countTotal: 0, countBrouillon: 0, countValidee: 0 }
+    );
+  }, [factures]);
+
+  const filteredFactures = useMemo(() => {
+    return factures.filter((facture) => {
+      const statut = (facture as any).etat || facture.status || 'BROUILLON';
+      const matchStatus = statusFilter === 'ALL' || statut === statusFilter;
+      const term = searchTerm.toLowerCase();
+      const matchText =
+        !term ||
+        ((facture as any).numeroFacture || facture.numero || '').toString().toLowerCase().includes(term) ||
+        ((facture as any).fournisseur || facture.clientNom || '').toLowerCase().includes(term);
+      return matchStatus && matchText;
+    });
+  }, [factures, statusFilter, searchTerm]);
+
   if (loading) {
     return <div className="loading">Chargement...</div>;
   }
@@ -87,10 +131,72 @@ const Factures = () => {
   return (
     <div className="factures-page">
       <div className="page-header">
-        <h1>Factures</h1>
-        <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Annuler' : 'Nouvelle Facture'}
-        </button>
+        <div>
+          <p className="eyebrow">Pilotage comptable</p>
+          <h1>Factures</h1>
+          <p className="subtitle">Suivez vos pièces clients/fournisseurs et leurs impacts HT/TVA/TTC.</p>
+        </div>
+        <div className="header-actions">
+          <div className="legend">
+            <span className="status-pill brouillon">Brouillon</span>
+            <span className="status-pill validee">Validée</span>
+          </div>
+          <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Annuler' : 'Nouvelle facture'}
+          </button>
+        </div>
+      </div>
+
+      <div className="dashboard-grid">
+        <div className="metric-card">
+          <p className="label">Total HT</p>
+          <h3>{computed.totalHT.toFixed(2)} DT</h3>
+          <p className="hint">Base taxable</p>
+        </div>
+        <div className="metric-card">
+          <p className="label">TVA collectée</p>
+          <h3>{computed.totalTVA.toFixed(2)} DT</h3>
+          <p className="hint">Calculée à 20%</p>
+        </div>
+        <div className="metric-card">
+          <p className="label">Total TTC</p>
+          <h3>{computed.totalTTC.toFixed(2)} DT</h3>
+          <p className="hint">Encaissements attendus</p>
+        </div>
+        <div className="metric-card">
+          <p className="label">Workflow</p>
+          <h3>{computed.countValidee}/{computed.countTotal}</h3>
+          <p className="hint">Validées / totales</p>
+        </div>
+      </div>
+
+      <div className="filters-bar">
+        <div className="pills">
+          <button
+            className={`pill ${statusFilter === 'ALL' ? 'active' : ''}`}
+            onClick={() => setStatusFilter('ALL')}
+          >
+            Toutes
+          </button>
+          <button
+            className={`pill ${statusFilter === 'BROUILLON' ? 'active' : ''}`}
+            onClick={() => setStatusFilter('BROUILLON')}
+          >
+            Brouillon ({computed.countBrouillon})
+          </button>
+          <button
+            className={`pill ${statusFilter === 'VALIDEE' ? 'active' : ''}`}
+            onClick={() => setStatusFilter('VALIDEE')}
+          >
+            Validée ({computed.countValidee})
+          </button>
+        </div>
+        <input
+          className="search"
+          placeholder="Rechercher par numéro ou client/fournisseur"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
       {showForm && (
@@ -176,38 +282,45 @@ const Factures = () => {
               <th>Montant HT</th>
               <th>TVA</th>
               <th>Total TTC</th>
-              <th>Type</th>
+              <th>Compte</th>
               <th>Statut</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {factures.map((facture) => (
-              <tr key={facture.id}>
-                <td>{(facture as any).numeroFacture || facture.numero}</td>
-                <td>{(facture as any).dateFacture || facture.date}</td>
-                <td>{(facture as any).fournisseur || facture.clientNom}</td>
-                <td>{((facture as any).montantHT ?? facture.montant ?? 0).toFixed(2)} DT</td>
-                <td>{((facture as any).montantTVA ?? facture.tva ?? 0).toFixed(2)} DT</td>
-                <td>{((facture as any).montantTTC ?? facture.totalTTC ?? 0).toFixed(2)} DT</td>
-                <td>{(facture as any).compteComptable || 'Facture'}</td>
-                <td>
-                  <span className={`status ${((facture as any).etat || facture.status || 'BROUILLON').toLowerCase()}`}>
-                    {(facture as any).etat || facture.status || 'BROUILLON'}
-                  </span>
-                </td>
-                <td>
-                  {((facture as any).etat || facture.status) === 'BROUILLON' && (
-                    <button
-                      className="btn-valider"
-                      onClick={() => handleValiderFacture(facture.id)}
-                    >
-                      Valider
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {filteredFactures.map((facture) => {
+              const statut = (facture as any).etat || facture.status || 'BROUILLON';
+              const montantHT = (facture as any).montantHT ?? facture.montant ?? 0;
+              const montantTVA = (facture as any).montantTVA ?? facture.tva ?? 0;
+              const montantTTC = (facture as any).montantTTC ?? facture.totalTTC ?? 0;
+
+              return (
+                <tr key={facture.id}>
+                  <td>{(facture as any).numeroFacture || facture.numero}</td>
+                  <td>{(facture as any).dateFacture || facture.date}</td>
+                  <td>{(facture as any).fournisseur || facture.clientNom}</td>
+                  <td>{montantHT.toFixed(2)} DT</td>
+                  <td>{montantTVA.toFixed(2)} DT</td>
+                  <td>{montantTTC.toFixed(2)} DT</td>
+                  <td>{(facture as any).compteComptable || '—'}</td>
+                  <td>
+                    <span className={`status ${statut.toLowerCase()}`}>
+                      {statut}
+                    </span>
+                  </td>
+                  <td>
+                    {statut === 'BROUILLON' && (
+                      <button
+                        className="btn-valider"
+                        onClick={() => handleValiderFacture(facture.id)}
+                      >
+                        Valider
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

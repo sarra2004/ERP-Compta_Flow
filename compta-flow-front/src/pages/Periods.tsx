@@ -69,17 +69,48 @@ const Periods = () => {
     return <div className="loading">Chargement...</div>;
   }
 
+  const periodsOuvertes = periods.filter(p => ((p as any).status || p.status) === 'OPEN' || p.status === 'OUVERT').length;
+  const periodsCloturees = periods.filter(p => ((p as any).status || p.status) !== 'OPEN' && p.status !== 'OUVERT').length;
+
   return (
     <div className="periods-page">
       <div className="page-header">
-        <h1>Périodes Comptables</h1>
+        <div>
+          <p className="eyebrow">Gestion exercices</p>
+          <h1>Périodes Comptables</h1>
+          <p className="subtitle">Gérez l'ouverture et la clôture de vos périodes mensuelles et annuelles.</p>
+        </div>
         <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
           {showForm ? 'Annuler' : 'Nouvelle Période'}
         </button>
       </div>
 
+      <div className="dashboard-grid">
+        <div className="metric-card">
+          <p className="label">Total périodes</p>
+          <h3>{periods.length}</h3>
+          <p className="hint">Exercices créés</p>
+        </div>
+        <div className="metric-card">
+          <p className="label">Périodes ouvertes</p>
+          <h3>{periodsOuvertes}</h3>
+          <p className="hint">Saisies autorisées</p>
+        </div>
+        <div className="metric-card">
+          <p className="label">Périodes clôturées</p>
+          <h3>{periodsCloturees}</h3>
+          <p className="hint">Verrouillées</p>
+        </div>
+        <div className="metric-card">
+          <p className="label">Exercice en cours</p>
+          <h3>{new Date().getFullYear()}</h3>
+          <p className="hint">Année active</p>
+        </div>
+      </div>
+
       {showForm && (
         <form className="period-form" onSubmit={handleSubmit}>
+          <h3>Nouvelle période comptable</h3>
           <div className="form-row">
             <div className="form-group">
               <label>Année</label>
@@ -87,6 +118,7 @@ const Periods = () => {
                 type="number"
                 value={formData.year}
                 onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
+                placeholder="Ex: 2026"
                 required
               />
             </div>
@@ -111,45 +143,78 @@ const Periods = () => {
                 <option value="12">Décembre</option>
               </select>
             </div>
+            <div className="form-group">
+              <label>Statut initial</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                required
+              >
+                <option value="OUVERT">Ouverte</option>
+                <option value="CLOSED">Clôturée</option>
+              </select>
+            </div>
           </div>
           <button type="submit" className="btn-submit">Créer la période</button>
         </form>
       )}
 
       <div className="periods-table">
+        <div className="table-header">
+          <h2>Liste des périodes</h2>
+          <div className="legend">
+            <span className="status-pill ouvert">Ouverte</span>
+            <span className="status-pill cloture">Clôturée</span>
+          </div>
+        </div>
         <table>
           <thead>
             <tr>
               <th>Année</th>
               <th>Mois</th>
+              <th>Période</th>
               <th>Statut</th>
               <th>Date de clôture</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {periods.map((period) => (
-              <tr key={period.id}>
-                <td>{period.year}</td>
-                <td>{getMonthName(period.month)}</td>
-                <td>
-                  <span className={`status ${((period as any).status || 'OPEN').toLowerCase()}`}>
-                    {(period as any).status === 'OPEN' ? 'OUVERT' : ((period as any).status || period.status)}
-                  </span>
-                </td>
-                <td>{formatDate((period as any).closingDate || period.closedDate)}</td>
-                <td>
-                  {((period as any).status === 'OPEN' || period.status === 'OUVERT') && (
-                    <button
-                      onClick={() => handleClosePeriod(period.id)}
-                      className="btn-danger"
-                    >
-                      Clôturer
-                    </button>
-                  )}
-                </td>
+            {periods.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="no-data">Aucune période comptable créée</td>
               </tr>
-            ))}
+            ) : (
+              periods.map((period) => {
+                const statut = (period as any).status || period.status;
+                const isOpen = statut === 'OPEN' || statut === 'OUVERT';
+                return (
+                  <tr key={period.id}>
+                    <td><strong>{period.year}</strong></td>
+                    <td>{getMonthName(period.month)}</td>
+                    <td>{period.month ? `${period.month}/${period.year}` : `Annuelle ${period.year}`}</td>
+                    <td>
+                      <span className={`status ${isOpen ? 'ouvert' : 'cloture'}`}>
+                        {isOpen ? '🟢 Ouverte' : '🔴 Clôturée'}
+                      </span>
+                    </td>
+                    <td>{formatDate((period as any).closingDate || period.closedDate)}</td>
+                    <td>
+                      {isOpen && (
+                        <button
+                          onClick={() => handleClosePeriod(period.id)}
+                          className="btn-cloturer"
+                        >
+                          🔒 Clôturer
+                        </button>
+                      )}
+                      {!isOpen && (
+                        <span className="locked-label">Verrouillée</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>

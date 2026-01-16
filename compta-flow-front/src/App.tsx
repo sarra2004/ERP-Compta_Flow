@@ -5,6 +5,7 @@ import Comptes from './pages/Comptes';
 import JournalEntries from './pages/JournalEntries';
 import Factures from './pages/Factures';
 import Periods from './pages/Periods';
+import Tresorerie from './pages/Tresorerie';
 import './App.css';
 
 function App() {
@@ -16,8 +17,7 @@ function App() {
           <Route path="comptes" element={<Comptes />} />
           <Route path="journal-entries" element={<JournalEntries />} />
           <Route path="factures" element={<Factures />} />
-          <Route path="periods" element={<Periods />} />
-        </Route>
+          <Route path="periods" element={<Periods />} />          <Route path="tresorerie" element={<Tresorerie />} />        </Route>
       </Routes>
     </Router>
   );

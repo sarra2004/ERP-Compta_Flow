@@ -1,6 +1,145 @@
+
 .factures-page {
   max-width: 1400px;
   margin: 0 auto;
+  padding: 1.5rem;
+  color: #1f2a3d;
+  background: linear-gradient(135deg, #f6f8fb 0%, #eef2f7 100%);
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: #5b708b;
+  margin: 0 0 0.35rem;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  color: #5b708b;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.legend {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status-pill {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.status-pill.brouillon {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-pill.validee {
+  background: #d4edda;
+  color: #155724;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1f6feb, #1747b7);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(31, 111, 235, 0.25);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.metric-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e6ecf5;
+}
+
+.metric-card .label {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #5b708b;
+}
+
+.metric-card h3 {
+  margin: 0.25rem 0 0.15rem;
+  font-size: 1.6rem;
+}
+
+.metric-card .hint {
+  margin: 0;
+  color: #7a8ca5;
+  font-size: 0.9rem;
+}
+
+.filters-bar {
+  background: white;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e6ecf5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  border: 1px solid #c8d3e1;
+  background: #f8fbff;
+  color: #1f2a3d;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+}
+
+.pill.active {
+  background: #1f6feb;
+  color: white;
+  border-color: #1f6feb;
+}
+
+.search {
+  flex: 1;
+  min-width: 220px;
+  border: 1px solid #c8d3e1;
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
 }
 
 .facture-form {
@@ -24,6 +163,11 @@
 .readonly {
   background-color: #f8f9fa;
   cursor: not-allowed;
+}
+
+.facture-form input,
+.facture-form textarea {
+  font-family: inherit;
 }
 
 .factures-grid {
@@ -132,4 +276,58 @@
 .status.annulee {
   background-color: #f8d7da;
   color: #721c24;
+}
+
+.status.brouillon {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status.validee {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.factures-table {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e6ecf5;
+  overflow: hidden;
+}
+
+.factures-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.factures-table th,
+.factures-table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+}
+
+.factures-table thead {
+  background: #f5f7fb;
+  color: #4a5a73;
+  border-bottom: 1px solid #e6ecf5;
+}
+
+.factures-table tbody tr {
+  border-bottom: 1px solid #f0f3f8;
+  transition: background 0.15s ease;
+}
+
+.factures-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+.btn-valider {
+  border: none;
+  background: #16a34a;
+  color: white;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
 }

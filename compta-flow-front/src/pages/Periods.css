@@ -1,113 +1,298 @@
 .periods-page {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 1.5rem;
+  color: #1f2a3d;
+  background: linear-gradient(135deg, #f6f8fb 0%, #eef2f7 100%);
+  min-height: 100vh;
 }
 
-.close-period-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 2rem;
-}
-
-.close-period-section h2 {
-  margin: 0 0 1.5rem 0;
-  color: #2c3e50;
-}
-
-.period-selector {
+.page-header {
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 1rem;
-  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-.period-selector select,
-.period-selector input {
-  flex: 1;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: #5b708b;
+  margin: 0 0 0.35rem;
 }
 
-.btn-close-period {
-  background-color: #e74c3c;
+.page-header h1 {
+  margin: 0.25rem 0;
+  font-size: 2rem;
+  color: #1f2a3d;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  color: #5b708b;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1f6feb, #1747b7);
   color: white;
   border: none;
-  padding: 0.75rem 2rem;
-  border-radius: 4px;
+  padding: 0.75rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s;
-  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(31, 111, 235, 0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.btn-close-period:hover:not(:disabled) {
-  background-color: #c0392b;
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(31, 111, 235, 0.35);
 }
 
-.btn-close-period:disabled {
-  background-color: #95a5a6;
-  cursor: not-allowed;
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.periods-list {
+.metric-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e6ecf5;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.metric-card .label {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #5b708b;
+  font-weight: 500;
+}
+
+.metric-card h3 {
+  margin: 0.25rem 0 0.15rem;
+  font-size: 1.6rem;
+  color: #1f2a3d;
+}
+
+.metric-card .hint {
+  margin: 0;
+  color: #7a8ca5;
+  font-size: 0.9rem;
+}
+
+.period-form {
   background: white;
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e6ecf5;
+  margin-bottom: 1.5rem;
 }
 
-.periods-list h2 {
-  margin: 0 0 1.5rem 0;
+.period-form h3 {
+  margin: 0 0 1.5rem;
+  color: #1f2a3d;
+  font-size: 1.2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
   color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.75rem;
+  border: 1px solid #c8d3e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #1f6feb;
+  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.1);
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: white;
+  border: none;
+  padding: 0.85rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(22, 163, 74, 0.35);
+}
+
+.periods-table {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e6ecf5;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e6ecf5;
+  background: #f5f7fb;
+}
+
+.table-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #1f2a3d;
+}
+
+.legend {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status-pill {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-weight: 500;
+}
+
+.status-pill.ouvert {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-pill.cloture {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.periods-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.periods-table th,
+.periods-table td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+}
+
+.periods-table thead {
+  background: #f5f7fb;
+  color: #4a5a73;
+  border-bottom: 2px solid #e6ecf5;
+}
+
+.periods-table th {
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.periods-table tbody tr {
+  border-bottom: 1px solid #f0f3f8;
+  transition: background 0.15s ease;
+}
+
+.periods-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+.periods-table tbody tr:last-child {
+  border-bottom: none;
 }
 
 .no-data {
   text-align: center;
   color: #7f8c8d;
-  padding: 2rem;
+  padding: 3rem;
   font-style: italic;
 }
 
-.periods-list table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.periods-list thead {
-  background-color: #34495e;
-  color: white;
-}
-
-.periods-list th,
-.periods-list td {
-  padding: 1rem;
-  text-align: left;
-}
-
-.periods-list tbody tr:nth-child(even) {
-  background-color: #f8f9fa;
-}
-
-.periods-list tbody tr:hover {
-  background-color: #e8f4f8;
-}
-
 .status {
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-.status.open {
-  background-color: #d4edda;
+.status.ouvert {
+  background: #d4edda;
   color: #155724;
 }
 
+.status.cloture,
 .status.closed {
-  background-color: #f8d7da;
+  background: #f8d7da;
   color: #721c24;
+}
+
+.btn-cloturer {
+  border: none;
+  background: #dc3545;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-cloturer:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+}
+
+.locked-label {
+  color: #6c757d;
+  font-style: italic;
+  font-size: 0.9rem;
 }
