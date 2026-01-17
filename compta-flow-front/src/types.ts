@@ -21,6 +21,9 @@ export interface JournalEntry {
   reference: string;
   description: string;
   lines: JournalEntryLine[];
+  period?: AccountingPeriod;
+  periodId?: number;
+  status?: 'DRAFT' | 'POSTED';
 }
 
 // Interface étendue pour couvrir les champs utilisés par le backend et le frontend

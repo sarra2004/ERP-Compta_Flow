@@ -2,6 +2,7 @@ package com.example.erp.compta_flow.services;
 
 import com.example.erp.compta_flow.models.CompteComptable;
 import com.example.erp.compta_flow.repository.CompteComptableRepository;
+import com.example.erp.compta_flow.repository.JournalEntryLineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,9 @@ public class CompteComptableService {
 
     @Autowired
     private CompteComptableRepository repository;
+
+    @Autowired
+    private JournalEntryLineRepository journalEntryLineRepository;
 
     public CompteComptable createAccount(CompteComptable acc) throws Exception {
         if (repository.findByNumero(acc.getNumero()).isPresent()) {
@@ -51,6 +55,12 @@ public class CompteComptableService {
         repository.save(acc);
     }
 
+    public void activateAccount(Long id) throws Exception {
+        CompteComptable acc = repository.findById(id).orElseThrow(() -> new Exception("Account not found"));
+        acc.setStatus(CompteComptable.Status.ACTIVE);
+        repository.save(acc);
+    }
+
     public void deleteAccount(Long id) throws Exception {
         CompteComptable acc = repository.findById(id).orElseThrow(() -> new Exception("Account not found"));
         if (accountIsUsed(id)) {
@@ -64,8 +74,8 @@ public class CompteComptableService {
     }
 
     private boolean accountIsUsed(Long id) {
-        // TODO: implement your logic to check if account has linked entries
-        return false;
+        long usageCount = journalEntryLineRepository.countByAccountId(id);
+        return usageCount > 0;
     }
 }
 

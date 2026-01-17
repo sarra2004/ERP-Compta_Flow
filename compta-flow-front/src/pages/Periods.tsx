@@ -7,10 +7,11 @@ const Periods = () => {
   const [periods, setPeriods] = useState<AccountingPeriod[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<AccountingPeriod>({
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
-    status: 'OUVERT',
+    status: 'OPEN',
   });
 
   const getMonthName = (month: number | null | undefined) => {
@@ -41,27 +42,50 @@ const Periods = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     try {
       await axios.post('/periods', formData);
       setShowForm(false);
       setFormData({
         year: new Date().getFullYear(),
         month: new Date().getMonth() + 1,
-        status: 'OUVERT',
+        status: 'OPEN',
       });
       fetchPeriods();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de la création de la période:', error);
+      const errorMsg = error.response?.data?.error || 'Impossible de créer la période';
+      setError(errorMsg);
     }
   };
 
   const handleClosePeriod = async (id: number | undefined) => {
     if (!id) return;
+    const confirmClose = window.confirm('Êtes-vous sûr de vouloir clôturer cette période ?');
+    if (!confirmClose) return;
+    setError(null);
     try {
       await axios.post(`/periods/${id}/close`);
       fetchPeriods();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de la clôture de la période:', error);
+      const errorMsg = error.response?.data?.error || 'Impossible de clôturer la période';
+      setError(errorMsg);
+    }
+  };
+
+  const handleReopenPeriod = async (id: number | undefined) => {
+    if (!id) return;
+    const confirmReopen = window.confirm('Êtes-vous sûr de vouloir rouvrir cette période ?');
+    if (!confirmReopen) return;
+    setError(null);
+    try {
+      await axios.patch(`/periods/${id}/reopen`);
+      fetchPeriods();
+    } catch (error: any) {
+      console.error('Erreur lors de la réouverture de la période:', error);
+      const errorMsg = error.response?.data?.error || 'Impossible de rouvrir la période';
+      setError(errorMsg);
     }
   };
 
@@ -69,8 +93,8 @@ const Periods = () => {
     return <div className="loading">Chargement...</div>;
   }
 
-  const periodsOuvertes = periods.filter(p => ((p as any).status || p.status) === 'OPEN' || p.status === 'OUVERT').length;
-  const periodsCloturees = periods.filter(p => ((p as any).status || p.status) !== 'OPEN' && p.status !== 'OUVERT').length;
+  const periodsOuvertes = periods.filter(p => (p as any).status === 'OPEN').length;
+  const periodsCloturees = periods.filter(p => (p as any).status === 'CLOSED').length;
 
   return (
     <div className="periods-page">
@@ -107,6 +131,12 @@ const Periods = () => {
           <p className="hint">Année active</p>
         </div>
       </div>
+
+      {error && (
+        <div className="error-banner">
+          ⚠️ {error}
+        </div>
+      )}
 
       {showForm && (
         <form className="period-form" onSubmit={handleSubmit}>
@@ -150,7 +180,7 @@ const Periods = () => {
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                 required
               >
-                <option value="OUVERT">Ouverte</option>
+                <option value="OPEN">Ouverte</option>
                 <option value="CLOSED">Clôturée</option>
               </select>
             </div>
@@ -186,7 +216,7 @@ const Periods = () => {
             ) : (
               periods.map((period) => {
                 const statut = (period as any).status || period.status;
-                const isOpen = statut === 'OPEN' || statut === 'OUVERT';
+                const isOpen = statut === 'OPEN';
                 return (
                   <tr key={period.id}>
                     <td><strong>{period.year}</strong></td>
@@ -198,17 +228,24 @@ const Periods = () => {
                       </span>
                     </td>
                     <td>{formatDate((period as any).closingDate || period.closedDate)}</td>
-                    <td>
+                    <td className="action-buttons">
                       {isOpen && (
                         <button
                           onClick={() => handleClosePeriod(period.id)}
                           className="btn-cloturer"
+                          title="Clôturer cette période"
                         >
                           🔒 Clôturer
                         </button>
                       )}
                       {!isOpen && (
-                        <span className="locked-label">Verrouillée</span>
+                        <button
+                          onClick={() => handleReopenPeriod(period.id)}
+                          className="btn-reopen"
+                          title="Rouvrir cette période"
+                        >
+                          🔓 Rouvrir
+                        </button>
                       )}
                     </td>
                   </tr>

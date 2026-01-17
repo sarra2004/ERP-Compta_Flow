@@ -45,6 +45,16 @@ public class CompteComptableController {
         }
     }
 
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<?> activateAccount(@PathVariable Long id) {
+        try {
+            service.activateAccount(id);
+            return ResponseEntity.ok("Account activated");
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
         try {

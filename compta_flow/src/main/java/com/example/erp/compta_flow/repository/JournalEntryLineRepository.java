@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JournalEntryLineRepository extends JpaRepository<JournalEntryLine, Long> {
+    long countByAccountId(Long accountId);
 }

@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import axios from '../api/axios';
-import type { JournalEntry, CompteComptable } from '../types';
+import type { JournalEntry, CompteComptable, AccountingPeriod } from '../types';
 import './JournalEntries.css';
 
 const JournalEntries = () => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [comptes, setComptes] = useState<CompteComptable[]>([]);
+  const [periods, setPeriods] = useState<AccountingPeriod[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<JournalEntry>({
     date: new Date().toISOString().split('T')[0],
     reference: '',
     description: '',
     lines: [],
+    periodId: undefined,
   });
 
   useEffect(() => {
@@ -34,12 +37,14 @@ const JournalEntries = () => {
 
   const fetchData = async () => {
     try {
-      const [entriesRes, comptesRes] = await Promise.all([
+      const [entriesRes, comptesRes, periodsRes] = await Promise.all([
         axios.get('/journal-entries'),
         axios.get('/comptes'),
+        axios.get('/periods'),
       ]);
       setEntries(entriesRes.data);
       setComptes(comptesRes.data);
+      setPeriods(periodsRes.data);
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
     } finally {
@@ -49,22 +54,29 @@ const JournalEntries = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    
+    if (!formData.periodId) {
+      setError('Veuillez sélectionner une période comptable');
+      return;
+    }
     
     // Vérifier que débit = crédit
     const totalDebit = formData.lines.reduce((sum, line) => sum + line.debit, 0);
     const totalCredit = formData.lines.reduce((sum, line) => sum + line.credit, 0);
     
     if (Math.abs(totalDebit - totalCredit) > 0.01) {
-      alert('Erreur : Le total des débits doit égaler le total des crédits');
+      setError('Le total des débits doit égaler le total des crédits');
       return;
     }
 
     try {
-      // Adapter le payload au backend: entryDate/entryNumber + lines.account
+      // Adapter le payload au backend: entryDate/entryNumber + lines.account + period
       const payload = {
         entryDate: formData.date,
         entryNumber: formData.reference,
         description: formData.description,
+        period: { id: formData.periodId },
         lines: formData.lines.map((line) => ({
           account: line.compte ? { id: line.compte.id } : null,
           description: line.libelle,
@@ -75,9 +87,19 @@ const JournalEntries = () => {
 
       await axios.post('/journal-entries', payload);
       setShowForm(false);
+      setFormData({
+        date: new Date().toISOString().split('T')[0],
+        reference: '',
+        description: '',
+        lines: [],
+        periodId: undefined,
+      });
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de la création de l\'écriture:', error);
+      console.error('Response data:', error.response?.data);
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message || 'Impossible de créer l\'écriture';
+      setError(errorMsg);
     }
   };
 
@@ -96,6 +118,35 @@ const JournalEntries = () => {
 
       {showForm && (
         <form className="journal-form" onSubmit={handleSubmit}>
+          {error && (
+            <div className="error-banner">
+              ⚠️ {error}
+            </div>
+          )}
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label>Période comptable *</label>
+              <select
+                value={formData.periodId || ''}
+                onChange={(e) => setFormData({ ...formData, periodId: parseInt(e.target.value) })}
+                required
+              >
+                <option value="">-- Sélectionner une période --</option>
+                {periods
+                  .filter(p => (p as any).status === 'OPEN')
+                  .map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.month ? `${p.month}/${p.year}` : `${p.year} (Annuelle)`}
+                    </option>
+                  ))}
+              </select>
+              {periods.filter(p => (p as any).status === 'OPEN').length === 0 && (
+                <small style={{ color: '#dc3545' }}>Aucune période ouverte. Créez-en une d'abord.</small>
+              )}
+            </div>
+          </div>
+
           <div className="form-row">
             <div className="form-group">
               <label>Date</label>

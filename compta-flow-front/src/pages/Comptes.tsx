@@ -7,6 +7,7 @@ const Comptes = () => {
   const [comptes, setComptes] = useState<CompteComptable[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState<CompteComptable>({
     numero: '',
     intitule: '',
@@ -33,8 +34,15 @@ const Comptes = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('/comptes', formData);
+      if (editingId) {
+        // Modification
+        await axios.put(`/comptes/${editingId}`, formData);
+      } else {
+        // Création
+        await axios.post('/comptes', formData);
+      }
       setShowForm(false);
+      setEditingId(null);
       setFormData({
         numero: '',
         intitule: '',
@@ -44,7 +52,81 @@ const Comptes = () => {
       });
       fetchComptes();
     } catch (error) {
-      console.error('Erreur lors de la création du compte:', error);
+      const message = (error as any)?.response?.data || `Erreur lors de ${editingId ? 'la modification' : 'la création'} du compte`;
+      console.error('Erreur:', message);
+      alert(message);
+    }
+  };
+
+  const handleEdit = (compte: CompteComptable) => {
+    setEditingId(compte.id || null);
+    setFormData({
+      numero: compte.numero,
+      intitule: compte.intitule,
+      classe: compte.classe,
+      type: compte.type,
+      status: compte.status,
+    });
+    setShowForm(true);
+  };
+
+  const handleCancelEdit = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setFormData({
+      numero: '',
+      intitule: '',
+      classe: '',
+      type: '',
+      status: 'ACTIVE',
+    });
+  };
+
+  const handleDisable = async (id: number | undefined) => {
+    if (!id) return;
+    const confirmDisable = window.confirm('Confirmer la désactivation de ce compte comptable ?');
+    if (!confirmDisable) return;
+    try {
+      await axios.patch(`/comptes/${id}/disable`);
+      fetchComptes();
+      alert('Compte désactivé avec succès.');
+    } catch (error) {
+      console.error('Erreur lors de la désactivation du compte:', error);
+      const errorData = (error as any)?.response?.data;
+      const message = typeof errorData === 'string' ? errorData : 'La désactivation a échoué.';
+      alert(message);
+    }
+  };
+
+  const handleActivate = async (id: number | undefined) => {
+    if (!id) return;
+    const confirmActivate = window.confirm('Confirmer la réactivation de ce compte comptable ?');
+    if (!confirmActivate) return;
+    try {
+      await axios.patch(`/comptes/${id}/activate`);
+      fetchComptes();
+      alert('Compte activé avec succès.');
+    } catch (error) {
+      console.error('Erreur lors de la réactivation du compte:', error);
+      const errorData = (error as any)?.response?.data;
+      const message = typeof errorData === 'string' ? errorData : 'La réactivation a échoué.';
+      alert(message);
+    }
+  };
+
+  const handleDelete = async (id: number | undefined) => {
+    if (!id) return;
+    const confirmDelete = window.confirm('Confirmer la suppression de ce compte comptable ?');
+    if (!confirmDelete) return;
+    try {
+      await axios.delete(`/comptes/${id}`);
+      fetchComptes();
+      alert('Compte supprimé avec succès.');
+    } catch (error) {
+      console.error('Erreur lors de la suppression du compte:', error);
+      const errorData = (error as any)?.response?.data;
+      const message = typeof errorData === 'string' ? errorData : "La suppression a échoué. Vérifiez que le compte n'est pas utilisé.";
+      alert(message);
     }
   };
 
@@ -56,13 +138,14 @@ const Comptes = () => {
     <div className="comptes-page">
       <div className="page-header">
         <h1>Plan Comptable</h1>
-        <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
+        <button className="btn-primary" onClick={() => showForm ? handleCancelEdit() : setShowForm(true)}>
           {showForm ? 'Annuler' : 'Nouveau Compte'}
         </button>
       </div>
 
       {showForm && (
         <form className="compte-form" onSubmit={handleSubmit}>
+          <h3>{editingId ? 'Modifier le compte' : 'Nouveau compte'}</h3>
           <div className="form-row">
             <div className="form-group">
               <label>Numéro</label>
@@ -114,7 +197,7 @@ const Comptes = () => {
               </select>
             </div>
           </div>
-          <button type="submit" className="btn-submit">Créer le compte</button>
+          <button type="submit" className="btn-submit">{editingId ? 'Modifier' : 'Créer le compte'}</button>
         </form>
       )}
 
@@ -127,6 +210,7 @@ const Comptes = () => {
               <th>Classe</th>
               <th>Type</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -140,6 +224,37 @@ const Comptes = () => {
                   <span className={`status ${compte.status.toLowerCase()}`}>
                     {compte.status}
                   </span>
+                </td>
+                <td>
+                  <div className="action-buttons">
+                    <button
+                      className="btn-edit"
+                      onClick={() => handleEdit(compte)}
+                    >
+                      Modifier
+                    </button>
+                    {compte.status === 'ACTIVE' ? (
+                      <button
+                        className="btn-warning"
+                        onClick={() => handleDisable(compte.id)}
+                      >
+                        Désactiver
+                      </button>
+                    ) : (
+                      <button
+                        className="btn-success"
+                        onClick={() => handleActivate(compte.id)}
+                      >
+                        Activer
+                      </button>
+                    )}
+                    <button
+                      className="btn-danger"
+                      onClick={() => handleDelete(compte.id)}
+                    >
+                      Supprimer
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

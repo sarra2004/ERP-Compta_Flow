@@ -3,8 +3,11 @@ package com.example.erp.compta_flow.services;
 import com.example.erp.compta_flow.models.CompteComptable;
 import com.example.erp.compta_flow.models.JournalEntry;
 import com.example.erp.compta_flow.models.JournalEntryLine;
+import com.example.erp.compta_flow.model.entity.AccountingPeriod;
+import com.example.erp.compta_flow.model.enums.PeriodStatus;
 import com.example.erp.compta_flow.repository.CompteComptableRepository;
 import com.example.erp.compta_flow.repository.JournalEntryRepository;
+import com.example.erp.compta_flow.repository.AccountingPeriodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +23,22 @@ public class JournalEntryService {
     @Autowired
     private CompteComptableRepository accountRepository;
 
+    @Autowired
+    private AccountingPeriodRepository periodRepository;
+
     public JournalEntry createEntry(JournalEntry entry) throws Exception {
+        // Vérifier que la période existe et est ouverte
+        if (entry.getPeriodId() == null) {
+            throw new Exception("Une période comptable est obligatoire");
+        }
+
+        AccountingPeriod period = periodRepository.findById(entry.getPeriodId())
+            .orElseThrow(() -> new Exception("Période comptable non trouvée"));
+
+        if (period.getStatus() == PeriodStatus.CLOSED) {
+            throw new Exception("Impossible de créer une écriture dans une période clôturée");
+        }
+
         // Check unique entry number only if provided
         if (entry.getEntryNumber() != null && !entry.getEntryNumber().isEmpty()) {
             if (entryRepository.findByEntryNumber(entry.getEntryNumber()).isPresent()) {
@@ -55,6 +73,7 @@ public class JournalEntryService {
             }
         }
 
+        entry.setPeriodId(period.getId());
         return entryRepository.save(entry);
     }
 
@@ -63,6 +82,15 @@ public class JournalEntryService {
 
         if (entry.getStatus() == JournalEntry.Status.POSTED) {
             throw new Exception("Cannot modify a posted entry");
+        }
+
+        // Vérifier que la période n'est pas clôturée
+        if (entry.getPeriodId() != null) {
+            AccountingPeriod period = periodRepository.findById(entry.getPeriodId())
+                .orElseThrow(() -> new Exception("Période non trouvée"));
+            if (period.getStatus() == PeriodStatus.CLOSED) {
+                throw new Exception("Cannot modify an entry in a closed period");
+            }
         }
 
         // Optional: update fields

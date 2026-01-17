@@ -53,6 +53,23 @@ public class PeriodController {
         }
     }
     
+    @PatchMapping("/{id}/reopen")
+    public ResponseEntity<?> reopenPeriod(@PathVariable Long id) {
+        try {
+            AccountingPeriod period = accountingService.reopenPeriod(id);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Période réouverte avec succès");
+            response.put("period", period);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+    
     @PostMapping("/close")
     public ResponseEntity<?> closePeriod(@RequestBody ClosePeriodRequest request) {
         try {

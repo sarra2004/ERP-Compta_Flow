@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.example.erp.compta_flow.model.entity.AccountingPeriod;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,6 +33,9 @@ public class JournalEntry {
     @ManyToOne
     @JoinColumn(name = "journal_account_id")
     private CompteComptable journalAccount; // The journal account (like Cash, Bank, Sales, etc.)
+
+    @Column(name = "period_id")
+    private Long periodId; // Référence à la période comptable (sans contrainte pour faciliter la migration)
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")

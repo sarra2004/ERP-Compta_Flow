@@ -38,6 +38,12 @@
   margin-bottom: 2rem;
 }
 
+.compte-form h3 {
+  margin: 0 0 1.5rem;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -109,6 +115,80 @@ tbody tr:hover {
   background-color: #e8f4f8;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-edit {
+  border: none;
+  background: #3498db;
+  color: white;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-edit:hover {
+  background: #2980b9;
+  transform: translateY(-1px);
+}
+
+.btn-warning {
+  border: none;
+  background: #f39c12;
+  color: white;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-warning:hover {
+  background: #e67e22;
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  border: none;
+  background: #27ae60;
+  color: white;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-success:hover {
+  background: #229954;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  border: none;
+  background: #dc3545;
+  color: white;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
 .status {
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
@@ -121,7 +201,13 @@ tbody tr:hover {
   color: #155724;
 }
 
-.status.inactif {
+.status.active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.inactif,
+.status.inactive {
   background-color: #f8d7da;
   color: #721c24;
 }

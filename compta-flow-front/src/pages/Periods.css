@@ -296,3 +296,38 @@
   font-style: italic;
   font-size: 0.9rem;
 }
+.btn-reopen {
+  border: none;
+  background: #28a745;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-reopen:hover {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+.error-banner {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  color: #856404;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.15);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
